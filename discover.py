@@ -5,6 +5,7 @@ from zeroconf import ServiceBrowser, Zeroconf, ServiceInfo
 import netifaces
 from flask import Flask
 from flask_jsontools import JsonSerializableBase, jsonapi
+from waitress import serve
 
 log = logging.getLogger('discovery')
 
@@ -186,6 +187,7 @@ def list_workstations():
 def main():
     logging.basicConfig(level=logging.DEBUG)
     refresh_listeners()
+    serve(app, host='127.0.0.1', port=13777)
     app.run()
 
 if __name__ == "__main__":
