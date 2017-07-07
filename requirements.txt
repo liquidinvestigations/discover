@@ -15,5 +15,6 @@ markupsafe==1.0           # via jinja2
 netifaces==0.10.4
 pip-tools==1.9.0
 six==1.10.0               # via pip-tools, zeroconf
+waitress==1.0.2
 werkzeug==0.12.2          # via flask
 zeroconf==0.19.0
