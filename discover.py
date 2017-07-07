@@ -159,8 +159,10 @@ class WorkstationListener(object):
         self.interface = interface
 
     def add_service(self, zeroconf, type_, name):
+        log.debug("+ %s add_service of type %s and name %s", self.interface, type_, name)
         info = zeroconf.get_service_info(type_, name, 10000)
         if not info:
+            log.debug("+ % add_service info timed out on type %s and name %s", self.interface, type_, name)
             return
         properties = dict_decode(info.properties)
         if 'liquid_hostname' in properties:
@@ -168,6 +170,7 @@ class WorkstationListener(object):
             add_record(name, self.interface, data)
 
     def remove_service(self, zeroconf, type_, name):
+        log.debug("- %s remove_service of type %s and name %s", self.interface, type_, name)
         if name in nodes:
             remove_record(name, self.interface)
 
