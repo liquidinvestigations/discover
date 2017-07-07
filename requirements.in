@@ -1,0 +1,5 @@
+pip-tools
+zeroconf
+Flask
+flask_jsontools
+netifaces
