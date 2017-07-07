@@ -15,11 +15,10 @@ nodes = {}
 zeroconf = {}
 
 def stop_dnsmasq():
-    pass # subprocess call to supervisorctl
+    subprocess.call(["supervisorctl", "stop", "dnsmasq-dns"])
 
 def restart_dnsmasq():
-    pass # subprocess call to supervisorctl
-
+    subprocess.call(["supervisorctl", "restart", "dnsmasq-dns"])
 
 class DnsmasqRestarter(Thread):
     def __init__(self):
