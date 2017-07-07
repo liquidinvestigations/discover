@@ -1,6 +1,10 @@
 import logging
+import time
+import shutil
 import subprocess
+from threading import Thread
 from datetime import datetime
+
 from zeroconf import ServiceBrowser, Zeroconf, ServiceInfo
 import netifaces
 from flask import Flask
@@ -15,14 +19,24 @@ HOST_ONLY_NETWORK_MASK = '255.255.255.255'
 nodes = {}
 zeroconf = {}
 
+def start_dnsmasq():
+    subprocess.call(["supervisorctl", "start", "dnsmasq-dns"])
+
 def stop_dnsmasq():
     subprocess.call(["supervisorctl", "stop", "dnsmasq-dns"])
 
 def restart_dnsmasq():
     subprocess.call(["supervisorctl", "restart", "dnsmasq-dns"])
 
+def rewrite_dnsmasq_conf(path, conf_string):
+    temp = path + ".tmp"
+    with open(temp, 'w') as f:
+        f.write(conf_string)
+    shutil.move(temp, path)
+
 class DnsmasqRestarter(Thread):
     def __init__(self):
+        super().__init__()
         self.last_dnsmasq_command = ''
 
     def run(self):
@@ -30,14 +44,23 @@ class DnsmasqRestarter(Thread):
             self.update_dnsmasq()
             time.sleep(3)
 
-    def update_dnsmasq():
+    def update_dnsmasq(self):
         interface = app.config['DNS_INTERFACE']
         if not interface:
-            stop_dnsmasq()
-        command = get_dns_command(interface)
+            if self.last_dnsmasq_command:
+                stop_dnsmasq()
+                self.last_dnsmasq_command = ''
+            return
+
+        command = get_dns_conf_string(interface)
         if command == self.last_dnsmasq_command:
             return
-        restart_dnsmasq()
+
+        rewrite_dnsmasq_conf(app.config['DNS_CONF_FILE'], command)
+        if self.last_dnsmasq_command:
+            restart_dnsmasq()
+        else:
+            start_dnsmasq()
         self.last_dnsmasq_command = command
 
 
@@ -143,12 +166,10 @@ class WorkstationListener(object):
         if 'liquid_hostname' in properties:
             data = get_data_from_info(self.interface, info, properties)
             add_record(name, self.interface, data)
-            update_dns(self.interface)
 
     def remove_service(self, zeroconf, type_, name):
         if name in nodes:
             remove_record(name, self.interface)
-            update_dns(self.interface)
 
 def refresh_listeners():
     interfaces = netifaces.interfaces()
@@ -187,8 +208,9 @@ def list_workstations():
 def main():
     logging.basicConfig(level=logging.DEBUG)
     refresh_listeners()
+    dnsmasq_restarter = DnsmasqRestarter()
+    dnsmasq_restarter.start()
     serve(app, host='127.0.0.1', port=13777)
-    app.run()
 
 if __name__ == "__main__":
     main()
