@@ -82,7 +82,7 @@ def get_dns_conf_string(interface):
 
     address_records = [
         (node['hostname'], node['address'])
-        for node in nodes.get(interface, [])
+        for node in nodes.get(interface, {}).values()
         if not node['is_local']
     ]
     address_records.sort()
