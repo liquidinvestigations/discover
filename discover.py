@@ -20,13 +20,13 @@ nodes = {}
 zeroconf = {}
 
 def start_dnsmasq():
-    subprocess.call(["supervisorctl", "start", "dnsmasq-dns"])
+    subprocess.call(["sudo", " supervisorctl", "start", "dnsmasq-dns"])
 
 def stop_dnsmasq():
-    subprocess.call(["supervisorctl", "stop", "dnsmasq-dns"])
+    subprocess.call(["sudo", "supervisorctl", "stop", "dnsmasq-dns"])
 
 def restart_dnsmasq():
-    subprocess.call(["supervisorctl", "restart", "dnsmasq-dns"])
+    subprocess.call(["sudo", "supervisorctl", "restart", "dnsmasq-dns"])
 
 def rewrite_dnsmasq_conf(path, conf_string):
     temp = path + ".tmp"
