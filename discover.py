@@ -11,6 +11,8 @@ from flask import Flask
 from flask_jsontools import JsonSerializableBase, jsonapi
 from waitress import serve
 
+import supervisor_client
+
 log = logging.getLogger('discovery')
 
 SERVICE_TYPE = "_liquid._tcp.local."
@@ -203,12 +205,31 @@ app = Flask(__name__)
 app.config.from_pyfile('settings/common.py')
 app.config.from_pyfile('settings/local.py', silent=True)
 
-@app.route('/json')
+@app.route('/nodes')
 @jsonapi
-def list_workstations():
+def list_nodes():
     return nodes
 
+@app.route('/')
+@jsonapi
+def status():
+    supervisor = supervisor_client.connect_unix_socket()
+    supervisor_info = {
+        'status': supervisor.getState()['statename'],
+        'version': supervisor.getVersion(),
+    }
+    supervisor_dns_info = supervisor.getProcessInfo('dnsmasq-dns')
+    dns_info = {key: supervisor_dns_info[key] for key in ['statename', 'description']}
+
+    return {
+        'status': 'ok',
+        'running': True,
+        'supervisor': supervisor_info,
+        'dns': dns_info,
+    }
+
 def main():
+    global dnsmasq_restarter
     logging.basicConfig(level=logging.DEBUG)
     refresh_listeners()
     dnsmasq_restarter = DnsmasqRestarter()
