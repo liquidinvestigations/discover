@@ -10,7 +10,7 @@ class UnixStreamHTTPConnection(http.client.HTTPConnection):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.sock.connect(self.host)
 
-class UnixStreamTransport(xmlrpc.client.Transport, object):
+class UnixStreamTransport(xmlrpc.client.Transport):
     def __init__(self, socket_path):
         self.socket_path = socket_path
         super(UnixStreamTransport, self).__init__()
