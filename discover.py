@@ -17,18 +17,23 @@ log = logging.getLogger('discovery')
 
 SERVICE_TYPE = "_liquid._tcp.local."
 HOST_ONLY_NETWORK_MASK = '255.255.255.255'
+DNSMASQ_PROCESS_NAME = 'dnsmasq-dns'
 
 nodes = {}
 zeroconf = {}
 
-def start_dnsmasq():
-    subprocess.call(["supervisorctl", "start", "dnsmasq-dns"])
+def reload_dnsmasq():
+    log.debug("Reloading dnsmasq-dns")
+    supervisor = supervisor_client.connect_unix_socket()
+    is_running = supervisor.getProcessInfo(DNSMSAQ_PROCESS_NAME)['statename'] == 'RUNNING'
+    if is_running:
+        supervisor.stopProcess(DNSMASQ_PROCESS_NAME)
+    supervisor.startProcess(DNSMASQ_PROCESS_NAME)
 
 def stop_dnsmasq():
-    subprocess.call(["supervisorctl", "stop", "dnsmasq-dns"])
-
-def restart_dnsmasq():
-    subprocess.call(["supervisorctl", "restart", "dnsmasq-dns"])
+    log.debug("Stopping dnsmasq-dns")
+    supervisor = supervisor_client.connect_unix_socket()
+    supervisor.stopProcess(DNSMSAQ_PROCESS_NAME)
 
 def rewrite_dnsmasq_conf(path, conf_string):
     temp = path + ".tmp"
@@ -59,10 +64,7 @@ class DnsmasqRestarter(Thread):
             return
 
         rewrite_dnsmasq_conf(app.config['DNS_CONF_FILE'], command)
-        if self.last_dnsmasq_command:
-            restart_dnsmasq()
-        else:
-            start_dnsmasq()
+        reload_dnsmasq()
         self.last_dnsmasq_command = command
 
 
@@ -218,7 +220,7 @@ def status():
         'status': supervisor.getState()['statename'],
         'version': supervisor.getVersion(),
     }
-    supervisor_dns_info = supervisor.getProcessInfo('dnsmasq-dns')
+    supervisor_dns_info = supervisor.getProcessInfo(DNSMASQ_PROCESS_NAME)
     dns_info = {key: supervisor_dns_info[key] for key in ['statename', 'description']}
 
     return {
@@ -238,3 +240,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

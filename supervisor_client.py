@@ -22,7 +22,7 @@ def connect_unix_socket(socket_path='/var/run/supervisor.sock'):
     transport = UnixStreamTransport(socket_path)
     # xmlrpc.client requires a URL starting with 'http' or 'https'
     url = 'http://argument_unused'
-    return xmlrpc.client.ServerProxy(url, transport=transport)
+    return xmlrpc.client.ServerProxy(url, transport=transport).supervisor
 
 def connect_http(url):
-    return xmlrpc.client.ServerProxy(url)
+    return xmlrpc.client.ServerProxy(url).supervisor
