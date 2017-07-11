@@ -25,7 +25,7 @@ zeroconf = {}
 def reload_dnsmasq():
     log.debug("Reloading dnsmasq-dns")
     supervisor = supervisor_client.connect_unix_socket()
-    is_running = supervisor.getProcessInfo(DNSMSAQ_PROCESS_NAME)['statename'] == 'RUNNING'
+    is_running = supervisor.getProcessInfo(DNSMASQ_PROCESS_NAME)['statename'] == 'RUNNING'
     if is_running:
         supervisor.stopProcess(DNSMASQ_PROCESS_NAME)
     supervisor.startProcess(DNSMASQ_PROCESS_NAME)
