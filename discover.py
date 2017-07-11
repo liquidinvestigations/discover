@@ -228,6 +228,7 @@ def status():
         'running': True,
         'supervisor': supervisor_info,
         'dns': dns_info,
+        'dns_interface': app.config['DNS_INTERFACE'],
     }
 
 def main():
