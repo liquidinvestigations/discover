@@ -120,8 +120,7 @@ def get_ipv4_addr(interface):
     ips = [
         a['addr']
         for a in addrs
-        if 'addr' in a
-        and a.get('netmask') != HOST_ONLY_NETWORK_MASK
+        if 'addr' in a and a.get('netmask') != HOST_ONLY_NETWORK_MASK
     ]
 
     if ips:
