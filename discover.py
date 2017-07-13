@@ -184,7 +184,7 @@ def refresh_listeners():
             log.debug("Interface %s was skipped because it didn't have an IPv4 address", interface)
             continue
         if ip in ['127.0.0.1', '0.0.0.0']:
-            log.debug("Interface %s was skipped because it had a blacklisted IPv4 address", interface)
+            log.debug("Interface %s was skipped because it had a unsupported IPv4 address", interface)
             continue
 
         # start zeroconf service browser restricted to the interface's address
