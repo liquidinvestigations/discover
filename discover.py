@@ -168,8 +168,9 @@ class LiquidServiceListener(object):
 
     def remove_service(self, zeroconf, type_, name):
         log.debug("- %s remove_service of type %s and name %s", self.interface, type_, name)
-        if name in nodes:
-            remove_record(name, self.interface)
+        if self.interface in nodes:
+            if name in nodes[self.interface]:
+                remove_record(name, self.interface)
 
 def refresh_listeners():
     interfaces = netifaces.interfaces()
