@@ -191,10 +191,6 @@ def refresh_listeners():
         zeroconf = Zeroconf([ip])
         listener = LiquidServiceListener(interface)
         ServiceBrowser(zeroconf, SERVICE_TYPE, listener)
-    if zeroconf.keys():
-        log.info("Discovery running on interfaces: %s", ", ".join(zeroconf.keys()))
-    else:
-        log.info("Discovery not running on any interface.")
 
 app = Flask(__name__)
 app.config.from_pyfile('settings/common.py')
