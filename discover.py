@@ -155,7 +155,7 @@ def add_record(name, interface, data):
 def remove_record(name, interface):
     del nodes[interface][name]
 
-class WorkstationListener(object):
+class LiquidServiceListener(object):
     def __init__(self, interface):
         self.interface = interface
 
@@ -190,7 +190,7 @@ def refresh_listeners():
         # start zeroconf service browser restricted to the interface's address
         log.info("Starting Zeroconf listener on %s, ip = %s", interface, ip)
         zeroconf[interface] = Zeroconf([ip])
-        listener = WorkstationListener(interface)
+        listener = LiquidServiceListener(interface)
         browser = ServiceBrowser(zeroconf[interface], SERVICE_TYPE, listener)
     if zeroconf.keys():
         log.info("Discovery running on interfaces: %s", ", ".join(zeroconf.keys()))
