@@ -20,7 +20,6 @@ HOST_ONLY_NETWORK_MASK = '255.255.255.255'
 DNSMASQ_PROCESS_NAME = 'dnsmasq-dns'
 
 nodes = {}
-zeroconf = {}
 
 def reload_dnsmasq():
     log.debug("Reloading dnsmasq-dns")
@@ -189,9 +188,9 @@ def refresh_listeners():
 
         # start zeroconf service browser restricted to the interface's address
         log.info("Starting Zeroconf listener on %s, ip = %s", interface, ip)
-        zeroconf[interface] = Zeroconf([ip])
+        zeroconf = Zeroconf([ip])
         listener = LiquidServiceListener(interface)
-        browser = ServiceBrowser(zeroconf[interface], SERVICE_TYPE, listener)
+        ServiceBrowser(zeroconf, SERVICE_TYPE, listener)
     if zeroconf.keys():
         log.info("Discovery running on interfaces: %s", ", ".join(zeroconf.keys()))
     else:
