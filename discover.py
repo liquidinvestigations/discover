@@ -131,7 +131,7 @@ def get_ipv4_addr(interface):
 
 def get_data_from_info(interface, info, properties):
     hostname = properties['liquid_hostname']
-    is_local = hostname == app.config['LIQUID_DOMAIN']
+    is_local = (hostname == app.config['LIQUID_DOMAIN'])
     if is_local:
         address = get_ipv4_addr(interface)
     else:
