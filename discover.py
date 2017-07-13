@@ -129,8 +129,7 @@ def get_ipv4_addr(interface):
     else:
         return None
 
-def get_data_from_info(interface, info, properties):
-    hostname = properties['liquid_hostname']
+def get_data_from_info(interface, info, hostname):
     is_local = (hostname == app.config['LIQUID_DOMAIN'])
     if is_local:
         address = get_ipv4_addr(interface)
@@ -139,14 +138,9 @@ def get_data_from_info(interface, info, properties):
 
     return {
         "type": info.type,
-        "server": info.server,
         "hostname": hostname,
         "is_local": is_local,
-        "name": info.name,
         "address": address,
-        "name": info.name,
-        "port": info.port,
-        "properties": properties,
         "discovered_at": datetime.now().isoformat()
     }
 
@@ -168,8 +162,9 @@ class WorkstationListener(object):
             log.debug("+ % add_service info timed out on type %s and name %s", self.interface, type_, name)
             return
         properties = dict_decode(info.properties)
-        if 'liquid_hostname' in properties:
-            data = get_data_from_info(self.interface, info, properties)
+        hostname = properties.get('liquid_hostname')
+        if hostname:
+            data = get_data_from_info(self.interface, info, hostname)
             add_record(name, self.interface, data)
 
     def remove_service(self, zeroconf, type_, name):
