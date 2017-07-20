@@ -5,7 +5,7 @@ LIQUID_DOMAIN = "example.liquid"
 DNSMASQ_INTERFACE = None
 
 # Default location of dns conf file to be generated
-DNSMASQ_CONFIG_PATH = "/var/lib/liquid/conf/discover/dnsmasq.conf"
+DNSMASQ_CONFIG_FILE = "/var/lib/liquid/conf/discover/dnsmasq.conf"
 
 # Default HTTP port
 HTTP_PORT = '13777'
