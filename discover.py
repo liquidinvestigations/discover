@@ -250,7 +250,7 @@ def status():
 def main():
     import waitress
 
-    logging.basicConfig(level=logging.DEBUG)
+    log.setLevel(app.config['LOG_LEVEL'])
     refresh_listeners()
     Thread(target=manage_dnsmasq).start()
     waitress.serve(app, host='127.0.0.1', port=app.config['HTTP_PORT'])

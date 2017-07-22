@@ -1,3 +1,7 @@
+import logging
+
+LOG_LEVEL = logging.INFO
+
 # FQDN for current machine
 LIQUID_DOMAIN = "the-safe-place.liquid"
 

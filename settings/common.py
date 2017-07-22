@@ -1,3 +1,6 @@
+import logging
+LOG_LEVEL = logging.DEBUG
+
 # FQDN for current machine
 LIQUID_DOMAIN = "example.liquid"
 
