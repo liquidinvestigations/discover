@@ -47,10 +47,18 @@ that it has discovered on the network, including itself.
 For example, node "one", if alone on a network with interface `eth0`, will have
 the following JSON response:
 
-    { "eth0": { "LI_vagrant-box-one-liquid._http._tcp.local.": { "is_local":
-    true, "properties": { "liquid_hostname": "vagrant-box-one.liquid" },
-    "discovered_at": "2017-06-20T10:17:33.256042", "hostname":
-    "vagrant-box-one.liquid", "address": "10.0.0.20", } } }
+    ```json
+    {
+      "enp0s3": {
+        "li-vagrant-box-one-liquid._liquid._tcp.local.": {
+          "address": "10.0.0.20",
+          "discovered_at": "2017-07-22T15:52:23.961552",
+          "hostname": "vagrant-box-one.liquid",
+          "is_local": true
+        }
+      }
+    }
+    ```
 
 
 ### Updating local DNS server records (for the user devices (laptops))
