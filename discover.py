@@ -18,7 +18,6 @@ class ValidationError(RuntimeError):
 log = logging.getLogger('discovery')
 
 SERVICE_TYPE = "_liquid._tcp.local."
-HOST_ONLY_NETWORK_MASK = '255.255.255.255'
 DNSMASQ_PROCESS_NAME = 'dnsmasq-dns'
 
 nodes = {}
@@ -128,7 +127,7 @@ def normalize_dict_str(data):
 def get_ipv4_addr(interface):
     def valid_addr(a):
         return 'addr' in a and \
-               a.get('netmask') != HOST_ONLY_NETWORK_MASK
+               validate_ipv4_address(a['addr'])
 
     addrs = netifaces.ifaddresses(interface).get(netifaces.AF_INET)
     if not addrs:
