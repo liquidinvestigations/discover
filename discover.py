@@ -221,6 +221,7 @@ def refresh_listeners():
 app = flask.Flask(__name__)
 app.config.from_pyfile('settings/common.py')
 app.config.from_pyfile('settings/local.py', silent=True)
+app.config.from_pyfile('settings/secret_key.py', silent=True)
 
 @app.route('/nodes')
 def list_nodes():
