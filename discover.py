@@ -45,11 +45,6 @@ def manage_dnsmasq():
     def update_dnsmasq():
         nonlocal last_dnsmasq_conf_string
         interface = app.config['DNSMASQ_INTERFACE']
-        if not interface:
-            if last_dnsmasq_conf_string:
-                stop_dnsmasq()
-                last_dnsmasq_conf_string = ''
-            return
 
         conf_string = get_dns_conf_string(interface)
         if conf_string == last_dnsmasq_conf_string:
@@ -93,6 +88,8 @@ def get_dns_conf_string(interface):
         'bind-interfaces',
         'interface={}'.format(interface),
         'listen-address={}'.format(ip),
+        'interface=lo',
+        'listen-address=127.0.0.1',
     ]
 
     dns_servers = [
@@ -205,7 +202,7 @@ def refresh_listeners():
                        "it didn't have an IPv4 address"),
                       interface)
             continue
-        if ip in ['127.0.0.1', '0.0.0.0']:
+        if ip in ['0.0.0.0']:
             log.debug(("Interface %r was skipped because" +
                        "it had a unsupported IPv4 address"),
                       interface)
