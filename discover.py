@@ -35,6 +35,11 @@ def stop_dnsmasq():
     supervisor = supervisor_client.connect()
     supervisor.stopProcess(DNSMASQ_PROCESS_NAME)
 
+def start_dnsmasq():
+    log.debug("Starting dnsmasq-dns")
+    supervisor = supervisor_client.connect()
+    supervisor.startProcess(DNSMASQ_PROCESS_NAME)
+
 def rewrite_dnsmasq_conf(path, conf_string):
     temp = path + ".tmp"
     with open(temp, 'w') as f:
@@ -55,6 +60,8 @@ def manage_dnsmasq():
         reload_dnsmasq()
 
     last_dnsmasq_conf_string = ''
+
+    start_dnsmasq()
     while True:
         update_dnsmasq()
         time.sleep(3)
