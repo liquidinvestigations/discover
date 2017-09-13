@@ -79,15 +79,22 @@ def valid_record(interface, hostname, address):
         return True
 
 def get_dns_conf_string(interface):
-    ip = get_ipv4_addr(interface)
+    if interface:
+        ip = get_ipv4_addr(interface)
+        listen_interface_args = [
+            'interface={}'.format(interface),
+            'listen-address={}'.format(ip),
+        ]
+    else:
+        listen_interface_args = []
+        ip = '127.0.0.1'
+
     common_args = [
         'domain-needed',
         'bogus-priv',
         'no-resolv',
         'no-hosts',
         'bind-interfaces',
-        'interface={}'.format(interface),
-        'listen-address={}'.format(ip),
         'interface=lo',
         'listen-address=127.0.0.1',
     ]
@@ -112,7 +119,7 @@ def get_dns_conf_string(interface):
         if valid_record(interface, hostname, address)
     ]
 
-    args = common_args + dns_servers + address_args
+    args = common_args + listen_interface_args + dns_servers + address_args
     return "\n".join(args) + "\n"
 
 def normalize_dict_str(data):
