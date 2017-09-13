@@ -123,8 +123,7 @@ def normalize_dict_str(data):
 
 def get_ipv4_addr(interface):
     def valid_addr(a):
-        return 'addr' in a and \
-               validate_ipv4_address(a['addr'])
+        return 'addr' in a
 
     addrs = netifaces.ifaddresses(interface).get(netifaces.AF_INET)
     if not addrs:
