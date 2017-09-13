@@ -5,7 +5,7 @@ LOG_LEVEL = logging.DEBUG
 LIQUID_DOMAIN = "example.liquid"
 
 # DNS interface that the DNS server runs on
-DNSMASQ_INTERFACE = 'lo'
+DNSMASQ_INTERFACE = None
 
 # Default location of dns conf file to be generated
 DNSMASQ_CONFIG_FILE = "/var/lib/liquid/conf/discover/dnsmasq.conf"
