@@ -61,6 +61,7 @@ def manage_dnsmasq():
 
     last_dnsmasq_conf_string = ''
 
+    update_dnsmasq()
     start_dnsmasq()
     while True:
         update_dnsmasq()
