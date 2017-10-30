@@ -6,9 +6,6 @@ from zeroconf import ServiceBrowser, Zeroconf
 import netifaces
 import flask
 
-import supervisor_client
-
-
 class ValidationError(RuntimeError):
     pass
 
@@ -152,7 +149,27 @@ app.config.from_pyfile('settings/secret_key.py', silent=True)
 
 @app.route('/nodes')
 def list_nodes():
-    return flask.jsonify(nodes)
+    def make_list(nodes):
+        node_list = []
+        hostname_added = {}
+        for interface in nodes:
+            for name in nodes[interface]:
+                node = nodes[interface][name]
+                if not node['is_local']:
+                    if hostname_added.get(node['hostname']):
+                        continue
+                    else:
+                        hostname_added[node['hostname']] = True
+                    node_list.append({
+                        'hostname': node['hostname'],
+                        'data': {
+                            'discovery_interface': interface,
+                            'discovered_at': node['discovered_at'],
+                            'last_seen_at': datetime.utcnow().isoformat(),
+                        }
+                    })
+        return node_list
+    return flask.jsonify(make_list(nodes.copy()))
 
 
 @app.route('/')
