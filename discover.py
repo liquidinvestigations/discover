@@ -165,6 +165,7 @@ def list_nodes():
                         'data': {
                             'discovery_interface': interface,
                             'discovered_at': node['discovered_at'],
+                            'address': node['address'],
                             'last_seen_at': datetime.utcnow().isoformat(),
                         }
                     })
