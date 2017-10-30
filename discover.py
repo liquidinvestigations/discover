@@ -1,6 +1,8 @@
 import re
 import logging
 from datetime import datetime
+import subprocess
+import json
 
 from zeroconf import ServiceBrowser, Zeroconf
 import netifaces
@@ -85,13 +87,27 @@ def handle_new_service(name, interface, service_info):
     add_record(name, interface, data)
 
 
+def update_dns():
+    print('telling setup about the new dns records')
+    options = {
+        'nodes': make_list(nodes),
+    }
+    subprocess.run(
+        ['/opt/setup/libexec/discover-update'],
+        input=json.dumps(options, indent=2).encode('utf8'),
+        check=True,
+    )
+
+
 def add_record(name, interface, data):
     nodes.setdefault(interface, {})
     nodes[interface][name] = data
+    update_dns()
 
 
 def remove_record(name, interface):
     del nodes[interface][name]
+    update_dns()
 
 
 class LiquidServiceListener(object):
@@ -147,29 +163,31 @@ app.config.from_pyfile('settings/local.py', silent=True)
 app.config.from_pyfile('settings/secret_key.py', silent=True)
 
 
+def make_list(nodes):
+    node_list = []
+    hostname_added = {}
+    for interface in nodes:
+        for name in nodes[interface]:
+            node = nodes[interface][name]
+            if not node['is_local']:
+                if hostname_added.get(node['hostname']):
+                    continue
+                else:
+                    hostname_added[node['hostname']] = True
+                node_list.append({
+                    'hostname': node['hostname'],
+                    'data': {
+                        'discovery_interface': interface,
+                        'discovered_at': node['discovered_at'],
+                        'address': node['address'],
+                        'last_seen_at': datetime.utcnow().isoformat(),
+                    }
+                })
+    return node_list
+
+
 @app.route('/nodes')
 def list_nodes():
-    def make_list(nodes):
-        node_list = []
-        hostname_added = {}
-        for interface in nodes:
-            for name in nodes[interface]:
-                node = nodes[interface][name]
-                if not node['is_local']:
-                    if hostname_added.get(node['hostname']):
-                        continue
-                    else:
-                        hostname_added[node['hostname']] = True
-                    node_list.append({
-                        'hostname': node['hostname'],
-                        'data': {
-                            'discovery_interface': interface,
-                            'discovered_at': node['discovered_at'],
-                            'address': node['address'],
-                            'last_seen_at': datetime.utcnow().isoformat(),
-                        }
-                    })
-        return node_list
     return flask.jsonify(make_list(nodes.copy()))
 
 
